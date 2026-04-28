@@ -1,11 +1,11 @@
-package ru.joutak.template;
+package ru.joutak.plugin;
 
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class EmptyPlugin extends JavaPlugin {
+public final class WebStatsPlugin extends JavaPlugin {
     @Getter
-    private static EmptyPlugin instance;
+    private static WebStatsPlugin instance;
 
     @Override
     public void onEnable() {

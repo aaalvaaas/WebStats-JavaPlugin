@@ -1,8 +1,10 @@
 package ru.joutak.plugin;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.joutak.plugin.config.PluginConfig;
+import ru.joutak.plugin.listeners.KillListener;
 
 public final class WebStatsPlugin extends JavaPlugin {
     @Getter
@@ -13,7 +15,7 @@ public final class WebStatsPlugin extends JavaPlugin {
     public void onEnable() {
         this.config = new PluginConfig(this);
 
-        getLogger().info("Backend URL: " + config.getEventsUrl());
+        Bukkit.getPluginManager().registerEvents(new KillListener(), this);
     }
 
     @Override

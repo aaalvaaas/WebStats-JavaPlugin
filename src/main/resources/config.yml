@@ -1,0 +1,14 @@
+backend:
+  url: "http://localhost:8000"
+
+api:
+  events: "/api/events"
+  stats: "/api/stats"
+  leaderboard: "/api/leaderboard"
+
+batch:
+  size: 10
+  intervalTicks: 100
+
+rateLimit:
+  perSecond: 5

@@ -5,12 +5,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import ru.joutak.plugin.services.KillService;
+import ru.joutak.plugin.services.MessageService;
 
 public class KillListener implements Listener {
     private final KillService killService;
+    private final MessageService messageService;
 
-    public KillListener(KillService killService) {
+    public KillListener(KillService killService, MessageService messageService) {
         this.killService = killService;
+        this.messageService = messageService;
     }
 
     @EventHandler
@@ -21,6 +24,6 @@ public class KillListener implements Listener {
 
         killService.addKill(killer.getUniqueId());
 
-        killer.sendMessage("§aYou killed a mob!");
+        messageService.sendKillMessage(killer, killService.getKills(killer.getUniqueId()));
     }
 }

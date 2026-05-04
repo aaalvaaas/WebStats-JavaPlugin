@@ -12,3 +12,6 @@ batch:
 
 rateLimit:
   perSecond: 5
+
+queue:
+  maxSize: 10000

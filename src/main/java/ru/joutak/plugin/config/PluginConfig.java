@@ -19,6 +19,8 @@ public class PluginConfig {
     private int intervalTicks;
     @Getter
     private int rateLimit;
+    @Getter
+    private int queueMaxSize;
 
     public PluginConfig(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -39,6 +41,7 @@ public class PluginConfig {
         this.intervalTicks = config.getInt("batch.intervalTicks");
 
         this.rateLimit = config.getInt("rateLimit.perSecond");
+        this.queueMaxSize = config.getInt("queue.maxSize");
     }
 
     public String getEventsUrl() {

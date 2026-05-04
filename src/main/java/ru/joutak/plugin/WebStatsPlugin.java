@@ -40,7 +40,7 @@ public final class WebStatsPlugin extends JavaPlugin {
         this.logger = new PluginLogger(this, config.isDebugEnabled());
 
         this.rateLimiter = new RateLimiterService(config.getRateLimit(), config.getWindowMillis());
-        this.sender = new HttpSender(config.getEventsUrl(), rateLimiter);
+        this.sender = new HttpSender(config.getEventsUrl(), rateLimiter, logger);
         this.processor = new BatchProcessor(eventQueueService, sender, retryService, metrics, logger, config.getBatchSize(), config.getRetryMaxAttempts());
 
         Bukkit.getPluginManager().registerEvents(new KillListener(killService, messageService, eventQueueService), this);

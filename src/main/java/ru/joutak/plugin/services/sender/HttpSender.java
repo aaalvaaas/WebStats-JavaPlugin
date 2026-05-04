@@ -3,6 +3,7 @@ package ru.joutak.plugin.services.sender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ru.joutak.plugin.model.KillEvent;
 import ru.joutak.plugin.services.limiter.RateLimiterService;
+import ru.joutak.plugin.services.logging.PluginLogger;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,10 +17,12 @@ public class HttpSender {
     private final URI uri;
     private final ObjectMapper mapper = new ObjectMapper();
     private final RateLimiterService rateLimiter;
+    private final PluginLogger logger;
 
-    public HttpSender(String endpoint, RateLimiterService rateLimiter) {
+    public HttpSender(String endpoint, RateLimiterService rateLimiter, PluginLogger logger) {
         this.uri = URI.create(endpoint);
         this.rateLimiter = rateLimiter;
+        this.logger = logger;
     }
 
     public CompletableFuture<Boolean> send(List<KillEvent> events) {
@@ -36,8 +39,18 @@ public class HttpSender {
                     .build();
 
             return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(r -> r.statusCode() >= 200 && r.statusCode() < 300)
-                    .exceptionally(ex -> false);
+                    .thenApply(response -> {
+                        int code = response.statusCode();
+
+                        if (code >= 200 && code < 300) return true;
+
+                        logger.warn("HTTP error code: " + code);
+                        return false;
+                    })
+                    .exceptionally(ex -> {
+                        logger.warn("HTTP send failed: " + ex.getMessage());
+                        return false;
+                    });
         } catch (Exception e) {
             return CompletableFuture.completedFuture(false);
         }

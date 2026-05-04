@@ -10,3 +10,8 @@ website: ${WEBSITE}
 depend: []
 libraries:
   - 'org.projectlombok:lombok:${LOMBOK_VERSION}'
+
+commands:
+  webstats:
+    description: WebStats control command
+    usage: /webstats <debug|metrics|queue>

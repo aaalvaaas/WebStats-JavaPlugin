@@ -15,3 +15,6 @@ rateLimit:
 
 queue:
   maxSize: 10000
+
+scheduler:
+  initialDelayTicks: 20

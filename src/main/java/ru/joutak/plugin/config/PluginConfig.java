@@ -21,6 +21,8 @@ public class PluginConfig {
     private int rateLimit;
     @Getter
     private int queueMaxSize;
+    @Getter
+    private int initialDelayTicks;
 
     public PluginConfig(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -39,6 +41,7 @@ public class PluginConfig {
 
         this.batchSize = config.getInt("batch.size");
         this.intervalTicks = config.getInt("batch.intervalTicks");
+        this.initialDelayTicks = config.getInt("scheduler.initialDelayTicks");
 
         this.rateLimit = config.getInt("rateLimit.perSecond");
         this.queueMaxSize = config.getInt("queue.maxSize");

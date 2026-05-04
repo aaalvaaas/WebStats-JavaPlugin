@@ -20,9 +20,15 @@ public class PluginConfig {
     @Getter
     private int rateLimit;
     @Getter
+    private int windowMillis;
+    @Getter
     private int queueMaxSize;
     @Getter
     private int initialDelayTicks;
+    @Getter
+    private int retryMaxAttempts;
+    @Getter
+    private int retryDelayTicks;
 
     public PluginConfig(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -44,7 +50,11 @@ public class PluginConfig {
         this.initialDelayTicks = config.getInt("scheduler.initialDelayTicks");
 
         this.rateLimit = config.getInt("rateLimit.perSecond");
+        this.windowMillis = config.getInt("rateLimit.windowMillis");
         this.queueMaxSize = config.getInt("queue.maxSize");
+
+        this.retryMaxAttempts = config.getInt("retry.maxAttempts");
+        this.retryDelayTicks = config.getInt("retry.delayTicks");
     }
 
     public String getEventsUrl() {

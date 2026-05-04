@@ -6,6 +6,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import ru.joutak.plugin.config.PluginConfig;
 import ru.joutak.plugin.listeners.KillListener;
 import ru.joutak.plugin.services.limiter.RateLimiterService;
+import ru.joutak.plugin.services.logging.PluginLogger;
+import ru.joutak.plugin.services.metrics.MetricsService;
 import ru.joutak.plugin.services.processor.BatchProcessor;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.KillService;
@@ -23,6 +25,8 @@ public final class WebStatsPlugin extends JavaPlugin {
     private BatchProcessor processor;
     private RateLimiterService rateLimiter;
     private RetryQueueService retryService;
+    private MetricsService metrics;
+    private PluginLogger logger;
 
     @Override
     public void onEnable() {
@@ -32,14 +36,16 @@ public final class WebStatsPlugin extends JavaPlugin {
         this.messageService = new MessageService();
         this.eventQueueService = new EventQueueService(config.getQueueMaxSize());
         this.retryService = new RetryQueueService();
+        this.metrics = new MetricsService();
+        this.logger = new PluginLogger(this, config.isDebugEnabled());
 
         this.rateLimiter = new RateLimiterService(config.getRateLimit(), config.getWindowMillis());
         this.sender = new HttpSender(config.getEventsUrl(), rateLimiter);
-        this.processor = new BatchProcessor(eventQueueService, sender, retryService, config.getBatchSize(), config.getRetryMaxAttempts());
+        this.processor = new BatchProcessor(eventQueueService, sender, retryService, metrics, logger, config.getBatchSize(), config.getRetryMaxAttempts());
 
         Bukkit.getPluginManager().registerEvents(new KillListener(killService, messageService, eventQueueService), this);
 
-        getLogger().info("WebStats plugin enabled!");
+        logger.info("WebStats plugin enabled!");
 
         new BukkitRunnable() {
             @Override

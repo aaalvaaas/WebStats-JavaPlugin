@@ -1,6 +1,8 @@
 package ru.joutak.plugin.services.processor;
 
 import ru.joutak.plugin.model.KillEvent;
+import ru.joutak.plugin.services.logging.PluginLogger;
+import ru.joutak.plugin.services.metrics.MetricsService;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.retry.RetryEvent;
 import ru.joutak.plugin.services.retry.RetryQueueService;
@@ -12,13 +14,18 @@ public class BatchProcessor {
     private final EventQueueService queueService;
     private final HttpSender sender;
     private final RetryQueueService retryService;
+    private final MetricsService metrics;
+    private final PluginLogger logger;
+
     private final int batchSize;
     private final int retryMaxAttempts;
 
-    public BatchProcessor(EventQueueService queueService, HttpSender sender, RetryQueueService retryService, int batchSize, int retryMaxAttempts) {
+    public BatchProcessor(EventQueueService queueService, HttpSender sender, RetryQueueService retryService, MetricsService metrics, PluginLogger logger, int batchSize, int retryMaxAttempts) {
         this.queueService = queueService;
         this.sender = sender;
         this.retryService = retryService;
+        this.metrics = metrics;
+        this.logger = logger;
         this.batchSize = batchSize;
         this.retryMaxAttempts = retryMaxAttempts;
     }
@@ -28,14 +35,27 @@ public class BatchProcessor {
 
         if (batch.isEmpty()) return;
 
+        logger.debug("Processing batch size=" + batch.size());
         send(batch, 1);
         processRetries();
     }
 
     private void send(List<KillEvent> batch, int attempt) {
         sender.send(batch).thenAccept(success -> {
-            if (!success) {
-                retryService.offer(batch, attempt);
+            if (success) {
+                metrics.incSent(batch.size());
+                logger.debug("Batch sent size=" + batch.size());
+            } else {
+                metrics.incFailed(batch.size());
+
+                if (attempt >= retryMaxAttempts) {
+                    metrics.incDropped(batch.size());
+                    logger.warn("Batch dropped size=" + batch.size());
+                } else {
+                    metrics.incRetried(batch.size());
+                    retryService.offer(batch, attempt);
+                    logger.debug("Retry scheduled attempt=" + attempt);
+                }
             }
         });
     }
@@ -44,8 +64,6 @@ public class BatchProcessor {
         RetryEvent retry;
 
         while ((retry = retryService.poll()) != null) {
-            if (retry.attempt() >= retryMaxAttempts) continue;
-
             send(retry.events(), retry.attempt() + 1);
         }
     }

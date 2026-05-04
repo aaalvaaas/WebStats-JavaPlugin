@@ -33,6 +33,6 @@ public class KillListener implements Listener {
 
         messageService.sendKillMessage(killer, killService.getKills(killerId));
 
-        eventQueueService.add(new KillEvent(killerId));
+        eventQueueService.offer(new KillEvent(killerId));
     }
 }

@@ -22,6 +22,7 @@ repositories {
 dependencies {
     compileOnly(libs.paper)
     compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
 
     implementation(libs.jackson.databind)
     implementation(libs.jackson.annotations)

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.joutak.plugin.config.PluginConfig;
 import ru.joutak.plugin.listeners.KillListener;
-import ru.joutak.plugin.services.EventQueueService;
+import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.KillService;
 import ru.joutak.plugin.services.MessageService;
 

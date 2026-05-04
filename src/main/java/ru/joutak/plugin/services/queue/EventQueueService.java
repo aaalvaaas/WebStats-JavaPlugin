@@ -1,4 +1,4 @@
-package ru.joutak.plugin.services;
+package ru.joutak.plugin.services.queue;
 
 import ru.joutak.plugin.model.KillEvent;
 

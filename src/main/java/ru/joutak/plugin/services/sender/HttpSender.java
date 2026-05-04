@@ -2,6 +2,7 @@ package ru.joutak.plugin.services.sender;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ru.joutak.plugin.model.KillEvent;
+import ru.joutak.plugin.services.limiter.RateLimiterService;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,12 +15,18 @@ public class HttpSender {
     private final HttpClient client = HttpClient.newHttpClient();
     private final URI uri;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final RateLimiterService rateLimiter;
 
-    public HttpSender(String endpoint) {
+    public HttpSender(String endpoint, RateLimiterService rateLimiter) {
         this.uri = URI.create(endpoint);
+        this.rateLimiter = rateLimiter;
     }
 
     public CompletableFuture<Boolean> send(List<KillEvent> events) {
+        if (!rateLimiter.allow()) {
+            return CompletableFuture.completedFuture(false);
+        }
+
         try {
             String json = mapper.writeValueAsString(events);
 

@@ -10,6 +10,7 @@ import ru.joutak.plugin.services.processor.BatchProcessor;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.KillService;
 import ru.joutak.plugin.services.MessageService;
+import ru.joutak.plugin.services.retry.RetryQueueService;
 import ru.joutak.plugin.services.sender.HttpSender;
 
 public final class WebStatsPlugin extends JavaPlugin {
@@ -21,6 +22,7 @@ public final class WebStatsPlugin extends JavaPlugin {
     private HttpSender sender;
     private BatchProcessor processor;
     private RateLimiterService rateLimiter;
+    private RetryQueueService retryService;
 
     @Override
     public void onEnable() {
@@ -29,10 +31,11 @@ public final class WebStatsPlugin extends JavaPlugin {
         this.killService = new KillService();
         this.messageService = new MessageService();
         this.eventQueueService = new EventQueueService(config.getQueueMaxSize());
+        this.retryService = new RetryQueueService();
 
         this.rateLimiter = new RateLimiterService(config.getRateLimit(), config.getWindowMillis());
         this.sender = new HttpSender(config.getEventsUrl(), rateLimiter);
-        this.processor = new BatchProcessor(eventQueueService, sender, config.getBatchSize());
+        this.processor = new BatchProcessor(eventQueueService, sender, retryService, config.getBatchSize(), config.getRetryMaxAttempts());
 
         Bukkit.getPluginManager().registerEvents(new KillListener(killService, messageService, eventQueueService), this);
 

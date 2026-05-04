@@ -21,7 +21,7 @@ public final class WebStatsPlugin extends JavaPlugin {
 
         this.killService = new KillService();
         this.messageService = new MessageService();
-        this.eventQueueService = new EventQueueService();
+        this.eventQueueService = new EventQueueService(config.getQueueMaxSize());
 
         Bukkit.getPluginManager().registerEvents(new KillListener(killService, messageService, eventQueueService), this);
 

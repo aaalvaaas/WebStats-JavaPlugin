@@ -20,4 +20,8 @@ public class RetryQueueService {
     public boolean isEmpty() {
         return retryQueue.isEmpty();
     }
+
+    public int size() {
+        return retryQueue.size();
+    }
 }

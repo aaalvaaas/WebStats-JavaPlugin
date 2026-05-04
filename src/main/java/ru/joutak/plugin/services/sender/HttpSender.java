@@ -27,6 +27,7 @@ public class HttpSender {
 
     public CompletableFuture<Boolean> send(List<KillEvent> events) {
         if (!rateLimiter.allow()) {
+            logger.debug("Rate limit exceeded");
             return CompletableFuture.completedFuture(false);
         }
 

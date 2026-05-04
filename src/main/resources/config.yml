@@ -23,3 +23,6 @@ scheduler:
 retry:
   maxAttempts: 3
   delayTicks: 100
+
+debug:
+  enabled: true

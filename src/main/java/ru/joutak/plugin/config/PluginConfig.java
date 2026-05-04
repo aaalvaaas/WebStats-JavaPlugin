@@ -29,6 +29,8 @@ public class PluginConfig {
     private int retryMaxAttempts;
     @Getter
     private int retryDelayTicks;
+    @Getter
+    private boolean debugEnabled;
 
     public PluginConfig(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -55,6 +57,8 @@ public class PluginConfig {
 
         this.retryMaxAttempts = config.getInt("retry.maxAttempts");
         this.retryDelayTicks = config.getInt("retry.delayTicks");
+
+        this.debugEnabled = config.getBoolean("debug.enabled");
     }
 
     public String getEventsUrl() {

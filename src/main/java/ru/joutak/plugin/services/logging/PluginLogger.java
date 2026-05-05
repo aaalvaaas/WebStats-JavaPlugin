@@ -1,10 +1,11 @@
 package ru.joutak.plugin.services.logging;
 
+import lombok.Setter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PluginLogger {
     private final JavaPlugin plugin;
-    private final boolean debugEnabled;
+    private boolean debugEnabled;
 
     public PluginLogger(JavaPlugin plugin, boolean debugEnabled) {
         this.plugin = plugin;
@@ -24,5 +25,10 @@ public class PluginLogger {
         if (debugEnabled) {
             plugin.getLogger().info("[DEBUG] " + message);
         }
+    }
+
+    public void setDebugEnabled(boolean debugEnabled) {
+        info("[DEBUG MODE = " + (debugEnabled ? "TRUE" : "FALSE") + "]");
+        this.debugEnabled = debugEnabled;
     }
 }

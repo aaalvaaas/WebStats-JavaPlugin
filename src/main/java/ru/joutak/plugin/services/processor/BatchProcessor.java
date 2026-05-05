@@ -1,5 +1,6 @@
 package ru.joutak.plugin.services.processor;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.joutak.plugin.model.KillEvent;
 import ru.joutak.plugin.services.logging.PluginLogger;
 import ru.joutak.plugin.services.metrics.MetricsService;
@@ -10,6 +11,7 @@ import ru.joutak.plugin.services.sender.HttpSender;
 
 import java.util.List;
 
+@Slf4j
 public class BatchProcessor {
     private final EventQueueService queueService;
     private final HttpSender sender;
@@ -52,9 +54,28 @@ public class BatchProcessor {
                     metrics.incDropped(batch.size());
                     logger.warn("Batch dropped size=" + batch.size());
                 } else {
-                    metrics.incRetried(batch.size());
-                    retryService.offer(batch, attempt);
-                    logger.debug("Retry scheduled attempt=" + attempt);
+                    for (KillEvent event : batch) {
+                        retryService.offer(event, attempt);
+                        metrics.incRetried(1);
+                    }
+                    logger.debug("Batch moved to retry attempt=" + attempt);
+                }
+            }
+        });
+    }
+
+    private void send(KillEvent event, int attempt) {
+        sender.send(List.of(event)).thenAccept(success -> {
+            if (success) {
+                metrics.incSent(1);
+            } else {
+                if (attempt >= retryMaxAttempts) {
+                    metrics.incDropped(1);
+                    logger.warn("Retry dropped event after max attempts");
+                } else {
+                    metrics.incRetried(1);
+                    retryService.offer(event, attempt + 1);
+                    logger.debug("Retry scheduled attempt=" + (attempt + 1));
                 }
             }
         });
@@ -64,7 +85,7 @@ public class BatchProcessor {
         RetryEvent retry;
 
         while ((retry = retryService.poll()) != null) {
-            send(retry.events(), retry.attempt() + 1);
+            send(retry.event(), retry.attempt());
         }
     }
 }

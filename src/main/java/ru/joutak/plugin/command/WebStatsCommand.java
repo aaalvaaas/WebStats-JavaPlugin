@@ -30,7 +30,7 @@ public class WebStatsCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length == 0) {
             messageService.send(commandSender, Messages.UNKNOWN_COMMAND);
-            return true;
+            return false;
         }
 
         switch (args[0].toLowerCase()) {

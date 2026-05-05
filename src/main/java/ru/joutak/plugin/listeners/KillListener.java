@@ -8,6 +8,7 @@ import ru.joutak.plugin.model.KillEvent;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.KillService;
 import ru.joutak.plugin.ui.MessageService;
+import ru.joutak.plugin.ui.Messages;
 
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public class KillListener implements Listener {
 
         killService.addKill(killerId);
 
-        messageService.sendKillMessage(killer, killService.getKills(killerId));
+        messageService.send(killer, Messages.killMessage(killService.getKills(killerId)));
 
         eventQueueService.offer(new KillEvent(killerId));
     }

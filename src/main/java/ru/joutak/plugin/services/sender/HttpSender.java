@@ -1,6 +1,6 @@
 package ru.joutak.plugin.services.sender;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import ru.joutak.plugin.model.KillEvent;
 import ru.joutak.plugin.services.limiter.RateLimiterService;
 import ru.joutak.plugin.services.logging.PluginLogger;
@@ -14,8 +14,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class HttpSender {
     private final HttpClient client = HttpClient.newHttpClient();
+    private final Gson gson = new Gson();
     private final URI uri;
-    private final ObjectMapper mapper = new ObjectMapper();
     private final RateLimiterService rateLimiter;
     private final PluginLogger logger;
 
@@ -32,7 +32,7 @@ public class HttpSender {
         }
 
         try {
-            String json = mapper.writeValueAsString(events);
+            String json = gson.toJson(events);
 
             HttpRequest request = HttpRequest.newBuilder(uri)
                     .header("Content-Type", "application/json")

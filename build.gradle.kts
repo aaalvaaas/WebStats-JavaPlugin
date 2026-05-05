@@ -24,10 +24,6 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
-    implementation(libs.jackson.databind)
-    implementation(libs.jackson.annotations)
-    implementation(libs.jackson.core)
-
     testImplementation(libs.bundles.junit)
 }
 

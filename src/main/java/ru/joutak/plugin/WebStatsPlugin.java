@@ -13,7 +13,7 @@ import ru.joutak.plugin.services.processor.BatchProcessor;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.KillService;
 import ru.joutak.plugin.ui.MessageService;
-import ru.joutak.plugin.services.retry.RetryQueueService;
+import ru.joutak.plugin.services.queue.RetryQueueService;
 import ru.joutak.plugin.services.sender.HttpSender;
 
 public final class WebStatsPlugin extends JavaPlugin {

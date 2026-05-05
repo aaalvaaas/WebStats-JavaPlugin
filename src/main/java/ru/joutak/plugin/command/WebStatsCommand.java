@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.joutak.plugin.services.logging.PluginLogger;
 import ru.joutak.plugin.services.metrics.MetricsService;
 import ru.joutak.plugin.services.queue.EventQueueService;
-import ru.joutak.plugin.services.retry.RetryQueueService;
+import ru.joutak.plugin.services.queue.RetryQueueService;
 import ru.joutak.plugin.ui.MessageService;
 import ru.joutak.plugin.ui.Messages;
 

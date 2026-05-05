@@ -5,8 +5,8 @@ import ru.joutak.plugin.model.KillEvent;
 import ru.joutak.plugin.services.logging.PluginLogger;
 import ru.joutak.plugin.services.metrics.MetricsService;
 import ru.joutak.plugin.services.queue.EventQueueService;
-import ru.joutak.plugin.services.retry.RetryEvent;
-import ru.joutak.plugin.services.retry.RetryQueueService;
+import ru.joutak.plugin.model.RetryEvent;
+import ru.joutak.plugin.services.queue.RetryQueueService;
 import ru.joutak.plugin.services.sender.HttpSender;
 
 import java.util.List;

@@ -1,6 +1,7 @@
-package ru.joutak.plugin.services.retry;
+package ru.joutak.plugin.services.queue;
 
 import ru.joutak.plugin.model.KillEvent;
+import ru.joutak.plugin.model.RetryEvent;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

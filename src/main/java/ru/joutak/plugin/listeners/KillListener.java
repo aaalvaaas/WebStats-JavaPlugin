@@ -7,7 +7,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import ru.joutak.plugin.model.KillEvent;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.KillService;
-import ru.joutak.plugin.services.MessageService;
+import ru.joutak.plugin.ui.MessageService;
 
 import java.util.UUID;
 

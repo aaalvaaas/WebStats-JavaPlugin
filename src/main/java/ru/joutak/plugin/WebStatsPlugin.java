@@ -11,7 +11,7 @@ import ru.joutak.plugin.services.metrics.MetricsService;
 import ru.joutak.plugin.services.processor.BatchProcessor;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.KillService;
-import ru.joutak.plugin.services.MessageService;
+import ru.joutak.plugin.ui.MessageService;
 import ru.joutak.plugin.services.retry.RetryQueueService;
 import ru.joutak.plugin.services.sender.HttpSender;
 

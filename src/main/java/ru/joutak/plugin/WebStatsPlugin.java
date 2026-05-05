@@ -3,6 +3,7 @@ package ru.joutak.plugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import ru.joutak.plugin.command.WebStatsCommand;
 import ru.joutak.plugin.config.PluginConfig;
 import ru.joutak.plugin.listeners.KillListener;
 import ru.joutak.plugin.services.limiter.RateLimiterService;
@@ -32,18 +33,31 @@ public final class WebStatsPlugin extends JavaPlugin {
     public void onEnable() {
         this.config = new PluginConfig(this);
 
+        this.logger = new PluginLogger(this, config.isDebugEnabled());
         this.killService = new KillService();
         this.messageService = new MessageService();
         this.eventQueueService = new EventQueueService(logger, config.getQueueMaxSize());
         this.retryService = new RetryQueueService();
         this.metrics = new MetricsService();
-        this.logger = new PluginLogger(this, config.isDebugEnabled());
 
         this.rateLimiter = new RateLimiterService(config.getRateLimit(), config.getWindowMillis());
         this.sender = new HttpSender(config.getEventsUrl(), rateLimiter, logger);
         this.processor = new BatchProcessor(eventQueueService, sender, retryService, metrics, logger, config.getBatchSize(), config.getRetryMaxAttempts());
 
         Bukkit.getPluginManager().registerEvents(new KillListener(killService, messageService, eventQueueService), this);
+
+        var cmd = getCommand("webstats");
+        if (cmd != null) {
+            cmd.setExecutor(new WebStatsCommand(
+                    logger,
+                    metrics,
+                    eventQueueService,
+                    retryService,
+                    messageService
+            ));
+        } else {
+            logger.warn("webstats command not found in plugin.yml");
+        }
 
         logger.info("WebStats plugin enabled!");
 

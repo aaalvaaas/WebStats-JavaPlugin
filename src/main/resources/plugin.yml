@@ -14,4 +14,4 @@ libraries:
 commands:
   webstats:
     description: WebStats control command
-    usage: /webstats <debug|metrics|queue>
+    usage: /webstats <debug | metrics | queue>

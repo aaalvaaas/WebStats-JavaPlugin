@@ -35,10 +35,11 @@ public class BatchProcessor {
     public void process() {
         List<KillEvent> batch = queueService.drainBatch(batchSize);
 
-        if (batch.isEmpty()) return;
+        if (!batch.isEmpty()) {
+            logger.debug("Processing batch size=" + batch.size());
+            send(batch, 1);
+        }
 
-        logger.debug("Processing batch size=" + batch.size());
-        send(batch, 1);
         processRetries();
     }
 

@@ -26,10 +26,10 @@ public class KillListener implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         Player killer = event.getEntity().getKiller();
-        UUID killerId = killer.getUniqueId();
 
         if (killer == null) return;
 
+        UUID killerId = killer.getUniqueId();
         killService.addKill(killerId);
 
         messageService.send(killer, Messages.killMessage(killService.getKills(killerId)));

@@ -8,6 +8,8 @@ api:
 
 batch:
   size: 10
+  minSize: 5
+  maxSize: 50
   intervalMs: 5000
 
 rateLimit:
@@ -23,6 +25,15 @@ scheduler:
 retry:
   maxAttempts: 3
   delayMs: 1000
+  maxDelayMs: 30000
+  jitterMs: 300
+
+backpressure:
+  enabled: true
+  threshold: 0.8
+
+dlq:
+  enabled: true
 
 debug:
   enabled: true

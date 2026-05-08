@@ -16,19 +16,40 @@ public class PluginConfig {
     @Getter
     private int batchSize;
     @Getter
-    private int intervalTicks;
+    private int batchIntervalMs;
+    @Getter
+    private int batchMinSize;
+    @Getter
+    private int batchMaxSize;
+
     @Getter
     private int rateLimit;
     @Getter
-    private int windowMillis;
+    private int windowMs;
+
     @Getter
     private int queueMaxSize;
+
     @Getter
-    private int initialDelayTicks;
+    private int initialDelayMs;
+
     @Getter
     private int retryMaxAttempts;
     @Getter
     private int retryDelayTicks;
+    @Getter
+    private int retryMaxDelayMs;
+    @Getter
+    private int retryJitterMs;
+
+    @Getter
+    private boolean backpressureEnabled;
+    @Getter
+    private double backpressureThreshold;
+
+    @Getter
+    private boolean dlqEnabled;
+
     @Getter
     private boolean debugEnabled;
 
@@ -48,15 +69,26 @@ public class PluginConfig {
         this.leaderboardEndpoint = config.getString("api.leaderboard");
 
         this.batchSize = config.getInt("batch.size");
-        this.intervalTicks = config.getInt("batch.intervalMs");
-        this.initialDelayTicks = config.getInt("scheduler.initialDelayMs");
+        this.batchIntervalMs = config.getInt("batch.intervalMs");
+        this.batchMinSize = config.getInt("batch.minSize");
+        this.batchMaxSize = config.getInt("batch.maxSize");
 
         this.rateLimit = config.getInt("rateLimit.perSecond");
-        this.windowMillis = config.getInt("rateLimit.windowMs");
+        this.windowMs = config.getInt("rateLimit.windowMs");
+
         this.queueMaxSize = config.getInt("queue.maxSize");
+
+        this.initialDelayMs = config.getInt("scheduler.initialDelayMs");
 
         this.retryMaxAttempts = config.getInt("retry.maxAttempts");
         this.retryDelayTicks = config.getInt("retry.delayMs");
+        this.retryMaxDelayMs = config.getInt("retry.maxDelayMs");
+        this.retryJitterMs = config.getInt("retry.jitterMs;");
+
+        this.backpressureEnabled = config.getBoolean("backpressure.enabled");
+        this.backpressureThreshold = config.getDouble("backpressure.threshold");
+
+        this.dlqEnabled = config.getBoolean("dlq.enabled");
 
         this.debugEnabled = config.getBoolean("debug.enabled");
     }

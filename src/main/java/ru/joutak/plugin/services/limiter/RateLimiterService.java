@@ -2,14 +2,14 @@ package ru.joutak.plugin.services.limiter;
 
 public class RateLimiterService {
     private final int limit;
-    private final long windowMillis;
+    private final long windowMs;
 
     private double tokens;
     private long lastRefillTime;
 
-    public RateLimiterService(int limit, long windowMillis) {
+    public RateLimiterService(int limit, long windowMs) {
         this.limit = limit;
-        this.windowMillis = windowMillis;
+        this.windowMs = windowMs;
 
         this.tokens = limit;
         this.lastRefillTime = System.currentTimeMillis();
@@ -30,7 +30,7 @@ public class RateLimiterService {
         long now = System.currentTimeMillis();
         long elapsed = now - lastRefillTime;
 
-        double refillTokens = (elapsed / (double) windowMillis) * limit;
+        double refillTokens = (elapsed / (double) windowMs) * limit;
 
         if (refillTokens > 0) {
             tokens = Math.min(limit, tokens + refillTokens);

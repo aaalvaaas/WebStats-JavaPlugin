@@ -40,7 +40,7 @@ public final class WebStatsPlugin extends JavaPlugin {
         this.retryService = new RetryQueueService();
         this.metrics = new MetricsService();
 
-        this.rateLimiter = new RateLimiterService(config.getRateLimit(), config.getWindowMillis());
+        this.rateLimiter = new RateLimiterService(config.getRateLimit(), config.getWindowMs());
         this.sender = new HttpSender(config.getEventsUrl(), rateLimiter, logger);
         this.processor = new BatchProcessor(eventQueueService, sender, retryService, metrics, logger, config.getBatchSize(), config.getRetryMaxAttempts());
 
@@ -66,7 +66,7 @@ public final class WebStatsPlugin extends JavaPlugin {
             public void run() {
                 processor.process();
             }
-        }.runTaskTimerAsynchronously(this, config.getInitialDelayTicks(), config.getIntervalTicks());
+        }.runTaskTimerAsynchronously(this, config.getInitialDelayMs(), config.getBatchIntervalMs());
     }
 
     @Override

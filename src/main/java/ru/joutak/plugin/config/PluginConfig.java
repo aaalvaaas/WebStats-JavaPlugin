@@ -36,7 +36,7 @@ public class PluginConfig {
     @Getter
     private int retryMaxAttempts;
     @Getter
-    private int retryDelayTicks;
+    private int retryDelayMs;
     @Getter
     private int retryMaxDelayMs;
     @Getter
@@ -81,7 +81,7 @@ public class PluginConfig {
         this.initialDelayMs = config.getInt("scheduler.initialDelayMs");
 
         this.retryMaxAttempts = config.getInt("retry.maxAttempts");
-        this.retryDelayTicks = config.getInt("retry.delayMs");
+        this.retryDelayMs = config.getInt("retry.delayMs");
         this.retryMaxDelayMs = config.getInt("retry.maxDelayMs");
         this.retryJitterMs = config.getInt("retry.jitterMs;");
 

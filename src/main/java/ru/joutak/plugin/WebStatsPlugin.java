@@ -61,12 +61,15 @@ public final class WebStatsPlugin extends JavaPlugin {
 
         logger.info("WebStats plugin enabled!");
 
+        long initialDelayTicks = config.getInitialDelayMs() / 50L;
+        long batchIntervalTicks = config.getBatchIntervalMs() / 50L;
+
         new BukkitRunnable() {
             @Override
             public void run() {
                 processor.process();
             }
-        }.runTaskTimerAsynchronously(this, config.getInitialDelayMs(), config.getBatchIntervalMs());
+        }.runTaskTimerAsynchronously(this, initialDelayTicks, batchIntervalTicks);
     }
 
     @Override

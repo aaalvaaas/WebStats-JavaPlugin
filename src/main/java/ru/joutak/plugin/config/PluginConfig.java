@@ -48,15 +48,15 @@ public class PluginConfig {
         this.leaderboardEndpoint = config.getString("api.leaderboard");
 
         this.batchSize = config.getInt("batch.size");
-        this.intervalTicks = config.getInt("batch.intervalTicks");
-        this.initialDelayTicks = config.getInt("scheduler.initialDelayTicks");
+        this.intervalTicks = config.getInt("batch.intervalMs");
+        this.initialDelayTicks = config.getInt("scheduler.initialDelayMs");
 
         this.rateLimit = config.getInt("rateLimit.perSecond");
-        this.windowMillis = config.getInt("rateLimit.windowMillis");
+        this.windowMillis = config.getInt("rateLimit.windowMs");
         this.queueMaxSize = config.getInt("queue.maxSize");
 
         this.retryMaxAttempts = config.getInt("retry.maxAttempts");
-        this.retryDelayTicks = config.getInt("retry.delayTicks");
+        this.retryDelayTicks = config.getInt("retry.delayMs");
 
         this.debugEnabled = config.getBoolean("debug.enabled");
     }

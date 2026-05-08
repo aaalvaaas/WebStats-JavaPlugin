@@ -8,21 +8,21 @@ api:
 
 batch:
   size: 10
-  intervalTicks: 100
+  intervalMs: 5000
 
 rateLimit:
   perSecond: 5
-  windowMillis: 1000
+  windowMs: 1000
 
 queue:
   maxSize: 10000
 
 scheduler:
-  initialDelayTicks: 20
+  initialDelayMs: 1000
 
 retry:
   maxAttempts: 3
-  delayTicks: 100
+  delayMs: 1000
 
 debug:
   enabled: true

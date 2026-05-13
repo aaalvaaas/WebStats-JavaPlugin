@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.joutak.plugin.model.KillEvent;
 import ru.joutak.plugin.services.logging.PluginLogger;
 import ru.joutak.plugin.services.metrics.MetricsService;
+import ru.joutak.plugin.services.queue.DeadLetterQueueService;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.model.RetryEvent;
 import ru.joutak.plugin.services.queue.RetryQueueService;
@@ -18,6 +19,7 @@ public class BatchProcessor {
     private final RetryQueueService retryService;
     private final MetricsService metrics;
     private final PluginLogger logger;
+    private final DeadLetterQueueService dlqService;
 
     private final int batchSize;
     private final int batchMinSize;
@@ -27,12 +29,13 @@ public class BatchProcessor {
     private final double backpressureThreshold;
     private final boolean backpressureEnabled;
 
-    public BatchProcessor(EventQueueService queueService, HttpSender sender, RetryQueueService retryService, MetricsService metrics, PluginLogger logger, int batchSize, int batchMinSize, int queueMaxSize, int retryMaxAttempts, double backpressureThreshold, boolean backpressureEnabled) {
+    public BatchProcessor(EventQueueService queueService, HttpSender sender, RetryQueueService retryService, MetricsService metrics, PluginLogger logger, DeadLetterQueueService dlqService, int batchSize, int batchMinSize, int queueMaxSize, int retryMaxAttempts, double backpressureThreshold, boolean backpressureEnabled) {
         this.queueService = queueService;
         this.sender = sender;
         this.retryService = retryService;
         this.metrics = metrics;
         this.logger = logger;
+        this.dlqService = dlqService;
         this.batchSize = batchSize;
         this.batchMinSize = batchMinSize;
         this.currBatchSize = batchSize;
@@ -49,7 +52,7 @@ public class BatchProcessor {
 
         if (!batch.isEmpty()) {
             logger.debug("Processing batch size=" + batch.size());
-            send(batch, 1);
+            sendBatch(batch, 1);
         }
 
         processRetries();
@@ -68,7 +71,7 @@ public class BatchProcessor {
         currBatchSize = batchSize;
     }
 
-    private void send(List<KillEvent> batch, int attempt) {
+    private void sendBatch(List<KillEvent> batch, int attempt) {
         sender.send(batch).thenAccept(success -> {
             if (success) {
                 metrics.incSent(batch.size());
@@ -78,7 +81,8 @@ public class BatchProcessor {
 
                 if (attempt >= retryMaxAttempts) {
                     metrics.incDropped(batch.size());
-                    logger.warn("Batch dropped size=" + batch.size());
+                    for (KillEvent event : batch) dlqService.offer(event);
+                    logger.warn("Batch dropped to dlq");
                 } else {
                     for (KillEvent event : batch) {
                         retryService.offer(event, attempt);
@@ -90,7 +94,7 @@ public class BatchProcessor {
         });
     }
 
-    private void send(KillEvent event, int attempt) {
+    private void sendEvent(KillEvent event, int attempt) {
         sender.send(List.of(event)).thenAccept(success -> {
             if (success) {
                 metrics.incSent(1);
@@ -111,7 +115,7 @@ public class BatchProcessor {
         RetryEvent retry;
 
         while ((retry = retryService.poll()) != null) {
-            send(retry.event(), retry.attempt());
+            sendEvent(retry.event(), retry.attempt());
         }
     }
 }

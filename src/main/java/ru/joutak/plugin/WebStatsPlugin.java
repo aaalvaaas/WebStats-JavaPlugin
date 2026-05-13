@@ -10,6 +10,7 @@ import ru.joutak.plugin.services.limiter.RateLimiterService;
 import ru.joutak.plugin.services.logging.PluginLogger;
 import ru.joutak.plugin.services.metrics.MetricsService;
 import ru.joutak.plugin.services.processor.BatchProcessor;
+import ru.joutak.plugin.services.queue.DeadLetterQueueService;
 import ru.joutak.plugin.services.queue.EventQueueService;
 import ru.joutak.plugin.services.KillService;
 import ru.joutak.plugin.ui.MessageService;
@@ -28,6 +29,7 @@ public final class WebStatsPlugin extends JavaPlugin {
     private RetryQueueService retryService;
     private MetricsService metrics;
     private PluginLogger logger;
+    private DeadLetterQueueService dlqService;
 
     @Override
     public void onEnable() {
@@ -39,10 +41,11 @@ public final class WebStatsPlugin extends JavaPlugin {
         this.eventQueueService = new EventQueueService(logger, config.getQueueMaxSize());
         this.retryService = new RetryQueueService(config.getRetryDelayMs(), config.getRetryMaxDelayMs(), config.getRetryJitterMs());
         this.metrics = new MetricsService();
+        this.dlqService = new DeadLetterQueueService(config.isDlqEnabled());
 
         this.rateLimiter = new RateLimiterService(config.getRateLimit(), config.getWindowMs());
         this.sender = new HttpSender(config.getEventsUrl(), rateLimiter, logger);
-        this.processor = new BatchProcessor(eventQueueService, sender, retryService, metrics, logger, config.getBatchSize(), config.getBatchMinSize(), config.getQueueMaxSize(), config.getRetryMaxAttempts(), config.getBackpressureThreshold(), config.isBackpressureEnabled());
+        this.processor = new BatchProcessor(eventQueueService, sender, retryService, metrics, logger, dlqService, config.getBatchSize(), config.getBatchMinSize(), config.getQueueMaxSize(), config.getRetryMaxAttempts(), config.getBackpressureThreshold(), config.isBackpressureEnabled());
 
         Bukkit.getPluginManager().registerEvents(new KillListener(killService, messageService, eventQueueService), this);
 

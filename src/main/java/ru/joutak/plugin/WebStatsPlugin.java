@@ -54,9 +54,12 @@ public final class WebStatsPlugin extends JavaPlugin {
             cmd.setExecutor(new WebStatsCommand(
                     logger,
                     metrics,
-                    eventQueueService,
-                    retryService,
-                    messageService
+                    messageService,
+                    eventQueueService.size(),
+                    retryService.size(),
+                    dlqService.size(),
+                    processor.getQueuePressure(),
+                    processor.getCurrBatchSize()
             ));
         } else {
             logger.warn("webstats command not found in plugin.yml");

@@ -14,16 +14,22 @@ import ru.joutak.plugin.ui.Messages;
 public class WebStatsCommand implements CommandExecutor {
     private final PluginLogger logger;
     private final MetricsService metrics;
-    private final EventQueueService eventQueue;
-    private final RetryQueueService retryQueue;
     private final MessageService messageService;
+    private final int eventQueueSize;
+    private final int retryQueueSize;
+    private final int dlqQueueSize;
+    private final double queuePressure;
+    private final int currBatchSize;
 
-    public WebStatsCommand(PluginLogger logger, MetricsService metrics, EventQueueService eventQueue, RetryQueueService retryQueue, MessageService messageService) {
+    public WebStatsCommand(PluginLogger logger, MetricsService metrics, MessageService messageService, int eventQueueSize, int retryQueueSize, int dlqQueueSize, double queuePressure, int currBatchSize) {
         this.logger = logger;
         this.metrics = metrics;
-        this.eventQueue = eventQueue;
-        this.retryQueue = retryQueue;
         this.messageService = messageService;
+        this.eventQueueSize = eventQueueSize;
+        this.retryQueueSize = retryQueueSize;
+        this.dlqQueueSize = dlqQueueSize;
+        this.queuePressure = queuePressure;
+        this.currBatchSize = currBatchSize;
     }
 
     @Override
@@ -57,11 +63,11 @@ public class WebStatsCommand implements CommandExecutor {
     }
 
     private void handleMetrics(CommandSender commandSender) {
-        String snapshot = metrics.snapshot(eventQueue.size(), retryQueue.size());
+        String snapshot = metrics.snapshot(eventQueueSize, retryQueueSize, dlqQueueSize, queuePressure, currBatchSize);
         messageService.send(commandSender, Messages.metrics(snapshot));
     }
 
     private void handleQueue(CommandSender commandSender) {
-        messageService.send(commandSender, Messages.queue(eventQueue.size(), retryQueue.size()));
+        messageService.send(commandSender, Messages.queue(eventQueueSize, retryQueueSize));
     }
 }

@@ -1,5 +1,6 @@
 package ru.joutak.plugin.services.processor;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import ru.joutak.plugin.model.KillEvent;
 import ru.joutak.plugin.services.logging.PluginLogger;
@@ -21,9 +22,10 @@ public class BatchProcessor {
     private final PluginLogger logger;
     private final DeadLetterQueueService dlqService;
 
+    @Getter
+    private int currBatchSize;
     private final int batchSize;
     private final int batchMinSize;
-    private int currBatchSize;
     private final int queueMaxSize;
     private final int retryMaxAttempts;
     private final double backpressureThreshold;
@@ -123,5 +125,9 @@ public class BatchProcessor {
 
             sendEvent(retry.event(), retry.attempt());
         }
+    }
+
+    public double getQueuePressure() {
+        return (double) queueService.size() / queueMaxSize;
     }
 }

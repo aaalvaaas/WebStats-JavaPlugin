@@ -24,12 +24,15 @@ public class MetricsService {
         dropped.addAndGet(n);
     }
 
-    public String snapshot(int queueSize, int retrySize) {
+    public String snapshot(int queueSize, int retrySize, int dlqSize, double queuePressure, int currBatchSize) {
         return "sent=" + sent.get()
                 + ", failed=" + failed.get()
                 + ", retried=" + retried.get()
                 + ", dropped=" + dropped.get()
                 + ", queueSize=" + queueSize
-                + ", retrySize=" + retrySize;
+                + ", retrySize=" + retrySize
+                + ", dlqSize=" + dlqSize
+                + ", queuePressure=" + (int) (queuePressure * 100) + "%"
+                + ", currentBatchSize=" + currBatchSize;
     }
 }

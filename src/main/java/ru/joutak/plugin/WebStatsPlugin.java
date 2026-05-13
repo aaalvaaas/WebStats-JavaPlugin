@@ -37,7 +37,7 @@ public final class WebStatsPlugin extends JavaPlugin {
         this.killService = new KillService();
         this.messageService = new MessageService();
         this.eventQueueService = new EventQueueService(logger, config.getQueueMaxSize());
-        this.retryService = new RetryQueueService();
+        this.retryService = new RetryQueueService(config.getRetryDelayMs(), config.getRetryMaxDelayMs(), config.getRetryJitterMs());
         this.metrics = new MetricsService();
 
         this.rateLimiter = new RateLimiterService(config.getRateLimit(), config.getWindowMs());

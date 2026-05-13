@@ -115,6 +115,11 @@ public class BatchProcessor {
         RetryEvent retry;
 
         while ((retry = retryService.poll()) != null) {
+            if (retry.nextRetryAtMs() > System.currentTimeMillis()) {
+                retryService.offer(retry.event(), retry.attempt());
+                continue;
+            }
+
             sendEvent(retry.event(), retry.attempt());
         }
     }

@@ -20,19 +20,31 @@ public class BatchProcessor {
     private final PluginLogger logger;
 
     private final int batchSize;
+    private final int batchMinSize;
+    private int currBatchSize;
+    private final int queueMaxSize;
     private final int retryMaxAttempts;
+    private final double backpressureThreshold;
+    private final boolean backpressureEnabled;
 
-    public BatchProcessor(EventQueueService queueService, HttpSender sender, RetryQueueService retryService, MetricsService metrics, PluginLogger logger, int batchSize, int retryMaxAttempts) {
+    public BatchProcessor(EventQueueService queueService, HttpSender sender, RetryQueueService retryService, MetricsService metrics, PluginLogger logger, int batchSize, int batchMinSize, int queueMaxSize, int retryMaxAttempts, double backpressureThreshold, boolean backpressureEnabled) {
         this.queueService = queueService;
         this.sender = sender;
         this.retryService = retryService;
         this.metrics = metrics;
         this.logger = logger;
         this.batchSize = batchSize;
+        this.batchMinSize = batchMinSize;
+        this.currBatchSize = batchSize;
+        this.queueMaxSize = queueMaxSize;
         this.retryMaxAttempts = retryMaxAttempts;
+        this.backpressureThreshold = backpressureThreshold;
+        this.backpressureEnabled = backpressureEnabled;
     }
 
     public void process() {
+        applyBackpressure();
+
         List<KillEvent> batch = queueService.drainBatch(batchSize);
 
         if (!batch.isEmpty()) {
@@ -41,6 +53,19 @@ public class BatchProcessor {
         }
 
         processRetries();
+    }
+
+    private void applyBackpressure() {
+        if (!backpressureEnabled) return;
+
+        double usage = (double) queueService.size() / queueMaxSize;
+        if (usage >= backpressureThreshold) {
+            logger.warn("Backpressure activated");
+            currBatchSize = Math.max(batchMinSize, currBatchSize / 2);
+            return;
+        }
+
+        currBatchSize = batchSize;
     }
 
     private void send(List<KillEvent> batch, int attempt) {

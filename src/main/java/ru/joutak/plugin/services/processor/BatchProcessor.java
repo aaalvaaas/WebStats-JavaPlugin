@@ -101,7 +101,8 @@ public class BatchProcessor {
             } else {
                 if (attempt >= retryMaxAttempts) {
                     metrics.incDropped(1);
-                    logger.warn("Retry dropped event after max attempts");
+                    dlqService.offer(event);
+                    logger.warn("Retry dropped event to dlq after max attempts");
                 } else {
                     metrics.incRetried(1);
                     retryService.offer(event, attempt + 1);
